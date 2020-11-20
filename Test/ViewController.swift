@@ -12,40 +12,34 @@ import CoreLocation
 class ViewController: UIViewController {
     
     let locationManager = CLLocationManager()
+
+    var listOfSubway = [SubwayDetail]()
     
     @IBOutlet weak var nameLabel: UILabel!
     
     
-    private var placesClient: GMSPlacesClient!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        placesClient = GMSPlacesClient.shared()
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
     }
 
     @IBAction func getCurrentPlace(_ sender: UIButton) {
+        let subwayRequest = SubwayRequest(placeType: "subway_station")
         
-        let fields: GMSPlaceField = GMSPlaceField(rawValue: (GMSPlaceField.name.rawValue) | (GMSPlaceField.types.rawValue))
-        
-        placesClient?.findPlaceLikelihoodsFromCurrentLocation(withPlaceFields: fields, callback: { (PlaceLikelihoodList: Array<GMSPlaceLikelihood>?, error: Error?) in
-            
-        if let error = error {
-            print("Current place error: \(error.localizedDescription)")
-            return
-        }
-        
-        if let placeLikelihoodList = PlaceLikelihoodList {
-            for likelihood in placeLikelihoodList {
-            let place = likelihood.place
-                
-            self.nameLabel.text = place.name
+        let subwayStation = listOfSubway
+        subwayRequest.getSubway { [weak self] result in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let subway):
+                self?.listOfSubway = subway
+                self?.nameLabel.text = subwayStation[0].name
             }
         }
+        
     }
-)}
     
     func retriveCurrentLocation() {
         let status = CLLocationManager.authorizationStatus()
