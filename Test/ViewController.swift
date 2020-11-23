@@ -37,9 +37,10 @@ class ViewController: UIViewController {
         if let placeLikelihoodList = PlaceLikelihoodList {
             for likelihood in placeLikelihoodList {
             let place = likelihood.place
-                
+            
             self.nameLabel.text = place.name
             self.nameLabel2.text = place.name
+            print(nameLabel)
             }
         }
     }
